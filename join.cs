@@ -1,31 +1,40 @@
 using System.Data;
 
+namespace JoinTables;
 
-class Join
+
+class Join :DataTable
 {
-    public DataSet joinSet;
-    public DataTable result = new DataTable();
-    public Join(DataSet joinSet)
+
+    public Join(DataSet joinSet) => Init(joinSet);
+    public void FillResult() => _FillResult();
+
+
+
+
+    private DataSet joinSet = new();
+    private void Init(DataSet joinSet)
     {
         this.joinSet = joinSet;
+        BuildResultTable();
     }
-    public void BuildResultTable()
+
+    private void BuildResultTable()
     {
-        result.TableName = "result";
         foreach (DataTable table in joinSet.Tables)
         {
             foreach (DataColumn c in table.Columns)
             {
-                result.Columns.Add(table.FQColumnName(c), c.DataType);
+                Columns.Add(table.FQColumnName(c), c.DataType);
             }
         }
     }
-    public void FillResult()
+    private void _FillResult()
     {
         int iRow;
         for (iRow = 0; iRow < joinSet.Tables[0].Rows.Count; iRow++)
         {
-            DataRow newRow = result.NewRow();
+            DataRow newRow = NewRow();
             foreach (DataTable table in joinSet.Tables)
             {
                 foreach (DataColumn c in table.Columns)
@@ -33,74 +42,83 @@ class Join
                     newRow[table.FQColumnName(c)] = table.Rows[iRow][c.ColumnName];
                 }
             }
-            result.Rows.Add(newRow);
+            Rows.Add(newRow);
         }
     }
 
-    public void PrintResult()
+    private void ForEachTasble(Action action)
     {
-        foreach (DataRow r in result.Rows)
+        foreach (DataTable table in joinSet.Tables)
         {
-            foreach (DataColumn c in result.Columns)
-            {
-                System.Console.Write(c.ColumnName + ": " + r[c.ColumnName] + ", ");
-            }
-            System.Console.WriteLine();
+            action();
         }
     }
-}
 
-
-public static class DataTableExtensions
-{
-    public static string FQColumnName(this DataTable table, DataColumn c)
+    public void FillBack()
     {
-        return table.TableName + "." + c.ColumnName;
-    }
-}
-
-public class FewTables
-{
-    public DataTable t1 = new ();
-    public DataTable t2 = new ();
-    public DataSet joinSet = new DataSet();
-    public FewTables()
-    {
-        Setup();
+        FillBackDeletedRows();
+        FillBackNewRows();
+        FillBackChangedRows();
+        AcceptChanges();
     }
 
-    public void PrintTable(DataTable t)
+    private void FillBackChangedRows()
     {
-        foreach (DataRow r in t.Rows)
+        foreach (DataRow r in Rows)
         {
-            foreach (DataColumn c in t.Columns)
+            if (r.RowState == DataRowState.Modified)
             {
-                System.Console.Write(c.ColumnName + ": " + r[c.ColumnName] + ", ");
+                foreach(DataColumn c in Columns)
+                {
+                    DataColumn? originalColumn = getOriginalColumn(c);
+                    originalColumn!.Table!.Rows[r.Table.Rows.IndexOf(r)][originalColumn!.ColumnName] = r[c.ColumnName];
+                }
             }
-            System.Console.WriteLine();
+        }
+    }
+    private void FillBackNewRows()
+    {
+        foreach (DataRow r in Rows)
+        {
+            if (r.RowState == DataRowState.Added)
+            {
+                foreach(DataTable table in joinSet.Tables)
+                {
+                    table.Rows.Add();
+                }
+                foreach (DataColumn c in Columns)
+                {
+                    DataColumn? originalColumn = getOriginalColumn(c);
+                    DataTable table = originalColumn!.Table!;
+                    table.LastRow()[originalColumn!.ColumnName] = r[c.ColumnName];
+                }
+            }
         }
     }
 
-    public void Setup()
+    private void FillBackDeletedRows()
     {
-        t1.TableName = "t1";
-        t1.Columns.Add("ID", typeof(int));
-        t1.Columns.Add("Name", typeof(string));
-
-        t2.TableName = "t2";
-        t2.Columns.Add("ID", typeof(int));
-        t2.Columns.Add("t1ID", typeof(int));
-        t2.Columns.Add("Name", typeof(string));
-
-        t1.Rows.Add(1, "A");
-        t1.Rows.Add(2, "B");
-
-        t2.Rows.Add(1, 1, "A1");
-        t2.Rows.Add(2, 1, "A2");
-        joinSet.Tables.Add(t1);
-        joinSet.Tables.Add(t2);
-
+        for(int i = 0; i < Rows.Count; i++ )
+        {
+            if (Rows[i].RowState == DataRowState.Deleted)
+            {
+                foreach(DataTable table in joinSet.Tables)
+                {
+                    table.Rows[i].Delete();
+                }
+            }
+        }
     }
-}
+
+    private DataColumn? getOriginalColumn(DataColumn c)
+    {
+        string FQName = c.ColumnName;
+        var s = FQName.Split('.');
+        DataTable table = joinSet.Tables[s[0]]?? throw new System.Exception("Table not found");
+        DataColumn? column = table.Columns[s[1]];
+        return column;
+    }
+
+ }
 
 

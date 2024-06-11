@@ -1,10 +1,17 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Data;
+﻿namespace JoinTables;
 
-Console.WriteLine("Hello, World!");
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Hello, World!");
 
-FewTables tables = new();
-Join join = new(tables.joinSet);
-join.BuildResultTable();
-join.FillResult();
-join.PrintResult();
+        FewTables tables = new();
+        Join join = new Join(tables.joinSet);
+        join.FillResult();
+        join.PrintTable();
+    }
+}
+   
+
+

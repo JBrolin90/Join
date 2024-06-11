@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dotnet",
+			"task": "build /home/joachim/lab/join/join.csproj",
+			"file": "/home/joachim/lab/join/join.csproj",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "dotnet: build /home/joachim/lab/join/join.csproj"
+		}
+	]
+}

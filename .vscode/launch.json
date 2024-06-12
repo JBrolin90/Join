@@ -5,8 +5,7 @@
             "name": "C#: Join Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/join.csproj",
-            "justMyCode": false
+            "projectPath": "${workspaceFolder}/join.csproj"
         },
         {
             "name": ".NET Core Launch (console)",
@@ -18,7 +17,7 @@
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole",
-            "justMyCode": false
+            "justMyCode": true
         }
     ]
 }

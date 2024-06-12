@@ -21,11 +21,31 @@ class Join :DataTable
 
     private void BuildResultTable()
     {
-        foreach (DataTable table in joinSet.Tables)
-        {
+        ForEachTable( (table) => {
             foreach (DataColumn c in table.Columns)
             {
                 Columns.Add(table.FQColumnName(c), c.DataType);
+            }
+        });
+    }
+
+    public void LeftOuter(Func<DataSet, DataRow, DataRow?> test)
+    {
+        foreach(DataRow leftRow in joinSet.Tables[0].Rows)
+        {
+            DataRow resultRow = NewRow();
+            foreach (DataColumn c in joinSet.Tables[0].Columns)
+            {
+                resultRow[joinSet.Tables[0].FQColumnName(c)] = leftRow[c.ColumnName];
+            }
+            Rows.Add(resultRow);
+            DataRow? rightRow = test(joinSet, leftRow);
+            if(rightRow != null)
+            {
+                foreach (DataColumn c in rightRow.Table.Columns)
+                {
+                    resultRow[rightRow.Table.FQColumnName(c)] = rightRow[c.ColumnName];
+                }
             }
         }
     }
@@ -34,23 +54,34 @@ class Join :DataTable
         int iRow;
         for (iRow = 0; iRow < joinSet.Tables[0].Rows.Count; iRow++)
         {
-            DataRow newRow = NewRow();
-            foreach (DataTable table in joinSet.Tables)
+            Rows.Add(NewRow());
+            ForEachTable((table) => 
             {
+                if(iRow==0) TableName = TableName+table.TableName;
+                DataRow row = this.LastRow();
                 foreach (DataColumn c in table.Columns)
                 {
-                    newRow[table.FQColumnName(c)] = table.Rows[iRow][c.ColumnName];
+                    row[table.FQColumnName(c)] = table.Rows[iRow][c.ColumnName];
                 }
-            }
-            Rows.Add(newRow);
+
+            });
+        }
+        AcceptChanges();
+    }
+
+    private void ForEachColumn(Action<DataColumn> action)
+    {
+        foreach (DataColumn c in Columns)
+        {
+            action(c);
         }
     }
 
-    private void ForEachTasble(Action action)
+    private void ForEachTable(Action<DataTable> action)
     {
         foreach (DataTable table in joinSet.Tables)
         {
-            action();
+            action(table);
         }
     }
 
@@ -84,13 +115,12 @@ class Join :DataTable
             {
                 foreach(DataTable table in joinSet.Tables)
                 {
-                    table.Rows.Add();
-                }
-                foreach (DataColumn c in Columns)
-                {
-                    DataColumn? originalColumn = getOriginalColumn(c);
-                    DataTable table = originalColumn!.Table!;
-                    table.LastRow()[originalColumn!.ColumnName] = r[c.ColumnName];
+                    DataRow newRow = table.NewRow();
+                    foreach (DataColumn c in table.Columns)
+                    {
+                        newRow[c.ColumnName] = r[table.FQColumnName(c)];
+                    }
+                    table.Rows.Add(newRow);
                 }
             }
         }

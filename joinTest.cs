@@ -25,7 +25,7 @@ public class FewTables
         t1.Rows.Add(2, "B");
 
         t2.Rows.Add(1, 1, "A1");
-        t2.Rows.Add(2, 1, "A2");
+        t2.Rows.Add(2, 2, "A2");
         joinSet.Tables.Add(t1);
         joinSet.Tables.Add(t2);
 

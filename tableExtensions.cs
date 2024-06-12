@@ -12,6 +12,7 @@ public static class DataTableExtensions
     }
    public static void PrintTable(this DataTable table)
     {
+        Console.WriteLine("Table: " + table.TableName);
         foreach (DataRow r in table.Rows)
         {
             foreach (DataColumn c in table.Columns)

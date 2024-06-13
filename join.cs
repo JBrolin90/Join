@@ -3,12 +3,13 @@ using System.Data;
 namespace JoinTables;
 
 
-class Join :DataTable
+public partial class Join :DataTable
 {
 
     public Join(DataSet joinSet) => Init(joinSet);
     public void FillResult() => _FillResult();
-
+    public void SelectAll() => BuildResultTable();
+    public void Select(List<DataColumn> columns) => _Select(columns);
 
 
 
@@ -21,6 +22,7 @@ class Join :DataTable
 
     private void BuildResultTable()
     {
+        Columns.Clear();
         ForEachTable( (table) => {
             foreach (DataColumn c in table.Columns)
             {
@@ -28,6 +30,17 @@ class Join :DataTable
             }
         });
     }
+
+    private void _Select(List<DataColumn> columns)
+    {
+        Columns.Clear();
+        foreach (DataColumn c in columns)
+        {
+            DataTable t = c.Table?? throw new System.Exception("Table not found");
+            Columns.Add(t.FQColumnName(c), c.DataType);
+        }
+    }
+
 
     public void LeftOuter(Func<DataSet, DataRow, DataRow?> test)
     {

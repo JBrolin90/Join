@@ -10,7 +10,7 @@ class Program
 
         FewTables tables = new();
         Join join = new Join(tables.joinSet);
-        join.FillResult();
+        join.Fill();
         Console.WriteLine("After init");
         join.PrintTable();
         tables.t1.PrintTable();

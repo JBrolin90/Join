@@ -1,5 +1,9 @@
 using System.Data;
 namespace JoinTables;
+
+class MyList: List<int>
+{}
+
 public class FewTables
 {
     public DataTable t1 = new ();

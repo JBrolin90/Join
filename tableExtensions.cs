@@ -22,5 +22,23 @@ public static class DataTableExtensions
             System.Console.WriteLine();
         }
     }
-
 }
+
+public static class DataRowExtensions
+{
+    public static void Delete(this DataRow row)
+    {
+        row.Table.Rows.Remove(row);
+    }
+    public static void Print(this DataRow row, bool lf = true)
+    {
+        foreach (DataColumn c in row.Table.Columns)
+        {
+            System.Console.Write(c.ColumnName + ": " + row[c.ColumnName] + ", ");
+        }
+        if (lf)
+        {
+            System.Console.WriteLine();
+        }
+    }
+}   

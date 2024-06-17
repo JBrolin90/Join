@@ -30,6 +30,8 @@ public class FewTables
 
         t2.Rows.Add(1, 1, "A1");
         t2.Rows.Add(2, 2, "A2");
+        t2.Rows.Add(3, 1, "A3");
+        t2.Rows.Add(4, 1, "A4");
         joinSet.Tables.Add(t1);
         joinSet.Tables.Add(t2);
 

@@ -23,6 +23,9 @@ class Program
         r[3] = 4;
         r[4] = "t2.C";
 
+        join.InnerJoin(tables.t1, tables.t2);
+
+
         join.Rows.Add(r);
         join.FillBack();
         Console.WriteLine("After add row");
@@ -47,6 +50,7 @@ class Program
         tables.t1.PrintTable();
         tables.t2.PrintTable();
         Console.WriteLine();
+
 
     }
 }

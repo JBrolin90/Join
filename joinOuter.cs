@@ -5,15 +5,32 @@ public partial class Join :DataTable
     // Method that uses Linq to join table
     public void InnerJoin(DataTable table1, DataTable table2 )
     {
-        var query = from t1 in table1.AsEnumerable()
+        var query = Inner(table1, table2);
+        var Xquery = from t1 in table1.AsEnumerable()
                     join t2 in table2.AsEnumerable()
-                    on t1.Field<int>("ID") equals t2.Field<int>("ID")
+                    on t1.Field<int>("ID") equals t2.Field<int>(table1.TableName+"ID")
                     select new { t1, t2 };
         foreach (var item in query)
         {
-            Console.WriteLine( $"ID: {item.t1[0]}), Name: {item.t1[1]}, Age: {item.t1[2]}, Address: {item.t2[3]}");
+            item.t1.Print(false); item.t2.Print();
+            DataRow r = NewRow();
+            foreach (DataColumn c in item.t1.Table.Columns)
+            {
+                string name = item.t1.Table.FQColumnName(c);
+                if(Columns.Contains(name))
+                {
+                    r[name] = item.t1[c.ColumnName];
+                }
+            }
+            foreach (DataColumn c in item.t2.Table.Columns)
+            {
+                string name = item.t2.Table.FQColumnName(c);
+                if(Columns.Contains(name))
+                {
+                    r[name] = item.t2[c.ColumnName];
+                }
+            }
         }
-
    }
     public void OuterJoin(DataTable table1, DataTable table2 )
     {
@@ -24,7 +41,18 @@ public partial class Join :DataTable
                     select new { t1, t2 };
             foreach (var item in query)
         {
-//            Console.WriteLine($"ID: {item.ID}, Name: {item.Name}, Age: {item.Age}, Address: {item.Address}");
+            {
+                item.t1.Delete();
+            }
+            {
+                item.t2.Delete();
+            }
+            {
+                item.t1.Delete();
+            }
+            {
+                item.t2.Delete();
+            }
         }
    }
    public void LeftJoin(DataTable table1, DataTable table2)

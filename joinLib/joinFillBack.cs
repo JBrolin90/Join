@@ -23,7 +23,7 @@ public partial class Join :DataTable
             {
                 foreach(DataColumn c in Columns)
                 {
-                    DataColumn? originalColumn = getOriginalColumn(c);
+                    DataColumn? originalColumn = getSourceColumn(c);
                     originalColumn!.Table!.Rows[r.Table.Rows.IndexOf(r)][originalColumn!.ColumnName] = r[c.ColumnName];
                 }
             }

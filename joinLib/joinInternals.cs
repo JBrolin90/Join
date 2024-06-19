@@ -48,12 +48,12 @@ public partial class Join :DataTable
     }
 
 
-    private DataColumn? getOriginalColumn(DataColumn c)
+    private DataColumn getSourceColumn(DataColumn c)
     {
         string FQName = c.ColumnName;
         var s = FQName.Split('.');
         DataTable table = joinSet.Tables[s[0]]?? throw new System.Exception("Table not found");
-        DataColumn? column = table.Columns[s[1]];
+        DataColumn column = table.Columns[s[1]]?? throw new System.Exception("Column not found");
         return column;
     }
 

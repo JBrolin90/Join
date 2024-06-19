@@ -1,35 +1,30 @@
 using System.Data;
+using System.Security.Cryptography;
 namespace JoinTables;
 public partial class Join :DataTable
 {
     // Method that uses Linq to join table
     public void InnerJoin(DataTable table1, DataTable table2 )
     {
-        var query = Inner(table1, table2);
-        var Xquery = from t1 in table1.AsEnumerable()
-                    join t2 in table2.AsEnumerable()
-                    on t1.Field<int>("ID") equals t2.Field<int>(table1.TableName+"ID")
-                    select new { t1, t2 };
-        foreach (var item in query)
+        var result = Inner(table1, table2);
+        foreach (var rowPair in result)
         {
-            item.t1.Print(false); item.t2.Print();
+            rowPair.r1.Print(false); rowPair.r2.Print();
             DataRow r = NewRow();
-            foreach (DataColumn c in item.t1.Table.Columns)
+            foreach (DataColumn c in Columns)
             {
-                string name = item.t1.Table.FQColumnName(c);
-                if(Columns.Contains(name))
+                DataColumn sourceColumn = getSourceColumn(c);
+                string name = sourceColumn.ColumnName;
+                DataTable table = sourceColumn.Table?? throw new System.Exception($"Table not found");
+                if(rowPair.r1.Table.Columns.Contains(name))
                 {
-                    r[name] = item.t1[c.ColumnName];
-                }
-            }
-            foreach (DataColumn c in item.t2.Table.Columns)
-            {
-                string name = item.t2.Table.FQColumnName(c);
-                if(Columns.Contains(name))
+                    r[name] = rowPair.r1[name];
+                }else if(rowPair.r2.Table.Columns.Contains(name))
                 {
-                    r[name] = item.t2[c.ColumnName];
-                }
+                    r[name] = rowPair.r2[name];
+                }else throw new System.Exception($"Column {name} not found");
             }
+            Rows.Add(r);
         }
    }
     public void OuterJoin(DataTable table1, DataTable table2 )

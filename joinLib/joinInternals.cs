@@ -7,6 +7,7 @@ public partial class EditableJoin :DataTable
     {
         if(joinSet.Tables.Count != 2) throw new System.Exception("Must be exactly two tables");
         this.joinSet = joinSet;
+        TableName = joinSet.Tables[0].TableName + joinSet.Tables[1].TableName;
     }
 
 

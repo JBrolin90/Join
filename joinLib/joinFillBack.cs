@@ -4,7 +4,7 @@ using System.Data;
 namespace JoinTables;
 
 
-public partial class Join :DataTable
+public partial class EditableJoin :DataTable
 {
 
     public void FillBack()

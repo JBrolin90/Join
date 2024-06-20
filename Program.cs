@@ -9,8 +9,7 @@ class Program
         Console.WriteLine("Hello, World!");
 
         FewTables tables = new();
-        Join join = new Join(tables.joinSet);
-        join.Fill();
+        EditableJoin join = new EditableJoin(tables.joinSet);
         Console.WriteLine("After init");
         join.PrintTable();
         tables.t1.PrintTable();
@@ -23,7 +22,7 @@ class Program
         r[3] = 4;
         r[4] = "t2.C";
 
-        join.InnerJoin(tables.t1, tables.t2);
+        join._InnerJoin(tables.t1, tables.t2);
 
 
         join.Rows.Add(r);

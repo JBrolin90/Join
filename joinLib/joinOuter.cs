@@ -1,32 +1,8 @@
 using System.Data;
 using System.Security.Cryptography;
 namespace JoinTables;
-public partial class Join :DataTable
+public partial class EditableJoin :DataTable
 {
-    // Method that uses Linq to join table
-    public void InnerJoin(DataTable table1, DataTable table2 )
-    {
-        var result = Inner(table1, table2);
-        foreach (var rowPair in result)
-        {
-            rowPair.r1.Print(false); rowPair.r2.Print();
-            DataRow r = NewRow();
-            foreach (DataColumn c in Columns)
-            {
-                DataColumn sourceColumn = getSourceColumn(c);
-                string name = sourceColumn.ColumnName;
-                DataTable table = sourceColumn.Table?? throw new System.Exception($"Table not found");
-                if(rowPair.r1.Table.Columns.Contains(name))
-                {
-                    r[name] = rowPair.r1[name];
-                }else if(rowPair.r2.Table.Columns.Contains(name))
-                {
-                    r[name] = rowPair.r2[name];
-                }else throw new System.Exception($"Column {name} not found");
-            }
-            Rows.Add(r);
-        }
-   }
     public void OuterJoin(DataTable table1, DataTable table2 )
     {
         var query = from t1 in table1.AsEnumerable()
@@ -70,7 +46,8 @@ public partial class Join :DataTable
         var query = from t1 in table.AsEnumerable() select t1;
         foreach (var item in query)
         {
-            item.Table.Columns["ID"].ColumnName = "New Name";
+            DataColumn column = item.Table.Columns["ID"]?? throw new System.Exception("Column not found");
+            column.ColumnName = "New Name";
             Console.WriteLine($"ID: {item.Field<int>("ID")}, Name: {item.Field<string>("Name")}, Age: {item.Field<int>("Age")}");
         }
     }

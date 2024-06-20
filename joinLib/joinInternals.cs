@@ -1,35 +1,14 @@
 using System.Data;
 namespace JoinTables;
-public partial class Join :DataTable
+public partial class EditableJoin :DataTable
 {
     private DataSet joinSet = new();
     private void Init(DataSet joinSet)
     {
+        if(joinSet.Tables.Count != 2) throw new System.Exception("Must be exactly two tables");
         this.joinSet = joinSet;
-        _SelectAll();
     }
 
-
-
-    private void _Fill()
-    {
-        int iRow;
-        for (iRow = 0; iRow < joinSet.Tables[0].Rows.Count; iRow++)
-        {
-            Rows.Add(NewRow());
-            ForEachTable((table) => 
-            {
-                if(iRow==0) TableName = TableName+table.TableName;
-                DataRow row = this.LastRow();
-                foreach (DataColumn c in table.Columns)
-                {
-                    row[table.FQColumnName(c)] = table.Rows[iRow][c.ColumnName];
-                }
-
-            });
-        }
-        AcceptChanges();
-    }
 
     private void ForEachColumn(Action<DataColumn> action)
     {

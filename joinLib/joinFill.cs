@@ -42,6 +42,7 @@ public partial class EditableJoin :DataTable
                         newRow[name] = rRow[c.ColumnName];
                 }
             }
+            Rows.Add(newRow);
         }
         AcceptChanges();
     }

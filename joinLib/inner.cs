@@ -69,6 +69,7 @@ public partial class EditableJoin :DataTable
                 r2 => r2[id2],
                 (r1, r2) => new RowPair { r1 = r1, r2 = r2 });
         _Fill(query);
+
         return query;
     }
 }

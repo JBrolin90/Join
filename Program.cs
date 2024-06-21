@@ -9,10 +9,12 @@ class Program
         Console.WriteLine("Hello, Joiners!");
 
         FewTables tables = new();
-        EditableJoin join = new EditableJoin(tables.joinSet);
-        Console.WriteLine("After init");
         tables.t1.PrintTable();
         tables.t2.PrintTable();
+
+        EditableJoin join = new EditableJoin(tables.joinSet);
+        //join.Select(new List<DataColumn> { tables.t1.Columns[0], tables.t1.Columns[1], tables.t2.Columns[0], tables.t2.Columns[1], tables.t2.Columns[2] });
+        join.Select(new List<DataColumn> { tables.t1.Columns[0], tables.t1.Columns[1],  tables.t2.Columns[2] });
         join.InnerJoin();
         join.PrintTable();
         Console.WriteLine();

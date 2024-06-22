@@ -11,13 +11,6 @@ public partial class EditableJoin :DataTable
     }
 
 
-    private void ForEachColumn(Action<DataColumn> action)
-    {
-        foreach (DataColumn c in Columns)
-        {
-            action(c);
-        }
-    }
 
     private void ForEachTable(Action<DataTable> action)
     {

@@ -2,12 +2,16 @@ using System.Data;
 namespace JoinTables;
 public partial class EditableJoin :DataTable
 {
+    private RowMapper rowMapper = new();
     private DataSet joinSet = new();
+    private DataColumn? primaryKey;
+    private DataColumn? foreignKey;
     private void Init(DataSet joinSet)
     {
         if(joinSet.Tables.Count != 2) throw new System.Exception("Must be exactly two tables");
         this.joinSet = joinSet;
         TableName = joinSet.Tables[0].TableName + joinSet.Tables[1].TableName;
+
     }
 
 
@@ -21,7 +25,7 @@ public partial class EditableJoin :DataTable
     }
 
 
-    private DataColumn getSourceColumn(DataColumn c)
+    private DataColumn GetSourceColumn(DataColumn c)
     {
         string FQName = c.ColumnName;
         var s = FQName.Split('.');

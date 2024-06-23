@@ -22,6 +22,19 @@ public static class DataTableExtensions
             System.Console.WriteLine();
         }
     }
+    public static void PrintRowStateCount(this DataTable table, DataRowState rowState)
+    {
+        int ModifiedRowsCount = 0;
+        foreach (DataRow r in table.Rows)
+        {
+            if (r.RowState == rowState)
+            {
+                ModifiedRowsCount++;
+            }
+        }
+        Console.WriteLine($"{rowState.ToString()} rows: {ModifiedRowsCount}");
+    }
+
 }
 
 public static class DataRowExtensions

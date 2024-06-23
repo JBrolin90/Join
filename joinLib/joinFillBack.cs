@@ -1,5 +1,6 @@
 
 using System.Data;
+using System.Data.Common;
 
 namespace JoinTables;
 
@@ -13,68 +14,84 @@ public partial class EditableJoin :DataTable
         FillBackNewRows();
         FillBackChangedRows();
         AcceptChanges();
+        if(rowMapper.Count != Rows.Count) throw new System.Exception("RowMapper count mismatch");
+
+    }
+
+    private DataRow GetSourceRow(DataRow joinRow, DataColumn sourceColumn)
+    {
+        DataTable sourceTable = sourceColumn.Table ?? throw new System.Exception("Table not found");
+        int iRowMap = Rows.IndexOf(joinRow);
+        int iSourceTable = joinSet.Tables.IndexOf(sourceTable); 
+        int sourceRow = rowMapper[iRowMap][iSourceTable];
+        return sourceTable.Rows[sourceRow];
     }
 
     private void FillBackChangedRows()
     {
-        PrintRowStateCount(DataRowState.Modified);
-        foreach (DataRow r in Rows)
+        this.PrintRowStateCount( DataRowState.Modified);
+        foreach (DataRow joinRow in Rows)
         {
-            if (r.RowState == DataRowState.Modified)
+            if (joinRow.RowState == DataRowState.Modified)
             {
-                foreach (DataColumn c in Columns)
+                int iRowMap = Rows.IndexOf(joinRow);
+                foreach (DataColumn joinColumn in Columns)
                 {
-                    DataColumn? originalColumn = getSourceColumn(c);
-                    originalColumn!.Table!.Rows[r.Table.Rows.IndexOf(r)][originalColumn!.ColumnName] = r[c.ColumnName];
+                    DataColumn sourceColumn = GetSourceColumn(joinColumn);
+                    GetSourceRow(joinRow, sourceColumn)[sourceColumn] = joinRow[joinColumn];
                 }
             }
         }
     }
 
-    private void PrintRowStateCount(DataRowState rowState)
-    {
-        int ModifiedRowsCount = 0;
-        foreach (DataRow r in Rows)
-        {
-            if (r.RowState == rowState)
-            {
-                ModifiedRowsCount++;
-            }
-        }
-        Console.WriteLine($"{rowState.ToString()} rows: {ModifiedRowsCount}");
-    }
 
     private void FillBackNewRows()
     {
-        PrintRowStateCount(DataRowState.Added);
-        foreach (DataRow r in Rows)
+        this.PrintRowStateCount(DataRowState.Added);
+        foreach (DataRow joinRow in Rows)
         {
-            if (r.RowState == DataRowState.Added)
+            if (joinRow.RowState == DataRowState.Added)
             {
+                TableMapper mapper = new();
                 foreach(DataTable table in joinSet.Tables)
                 {
+                    bool hasData = false;
                     DataRow newRow = table.NewRow();
-                    foreach (DataColumn c in table.Columns)
+                    foreach (DataColumn joinColumn in Columns)
                     {
-                        newRow[c.ColumnName] = r[table.FQColumnName(c)];
+                        DataColumn sourceColumn = GetSourceColumn(joinColumn);
+                        if(sourceColumn.Table == table) {
+                            if(joinRow[joinColumn] != DBNull.Value) {
+                                newRow[sourceColumn] = joinRow[joinColumn];
+                                hasData = true;
+                            }
+                        }
                     }
-                    table.Rows.Add(newRow);
+                    if(hasData==true) {
+                        table.Rows.Add(newRow);
+                    }
+                    mapper.Add(table.Rows.IndexOf(newRow));
                 }
+                rowMapper.Add(mapper);
             }
         }
     }
 
     private void FillBackDeletedRows()
     {
-        PrintRowStateCount(DataRowState.Deleted);
-        for(int i = 0; i < Rows.Count; i++ )
+        this.PrintRowStateCount(DataRowState.Deleted);
+        for(int iJoinRow = Rows.Count-1; iJoinRow >= 0; iJoinRow-- )
         {
-            if (Rows[i].RowState == DataRowState.Deleted)
+            DataRow? joinRow = Rows[iJoinRow];
+            if (joinRow.RowState == DataRowState.Deleted)
             {
                 foreach(DataTable table in joinSet.Tables)
                 {
-                    table.Rows[i].Delete();
+                    int iSourceTable = joinSet.Tables.IndexOf(table);
+                    DataRow sourceRow = table.Rows[rowMapper[iJoinRow][iSourceTable]];
+                    sourceRow.Delete();
                 }
+                rowMapper.RemoveAt(iJoinRow);
             }
         }
     }

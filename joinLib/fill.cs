@@ -16,13 +16,17 @@ public partial class EditableJoin :DataTable
             DataRow row = NewRow();
             foreach (DataColumn c in Columns) 
             {
-                DataColumn sc = getSourceColumn(c);
+                DataColumn sc = GetSourceColumn(c);
                 if(sc.Table == r1.Table)
                     row[c] = r1[sc];
                 else if(sc.Table == r2.Table)
                     row[c] = r2[sc];
             }
             Rows.Add(row);
+            TableMapper mapper = new();
+            mapper.Add(r1.Table.Rows.IndexOf(r1));
+            mapper.Add(r2.Table.Rows.IndexOf(r2));
+            rowMapper.Add(mapper);
         }
         AcceptChanges();
     }

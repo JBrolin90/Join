@@ -12,6 +12,6 @@ public partial class EditableJoin : DataTable
         public void SelectAll() => _SelectAll();
         public void Select(List<DataColumn> columns) => _Select(columns);
         public void InnerJoin() => _InnerJoin();
-        public void InnerJoin(DataColumn id1, DataColumn id2) => _InnerJoin(id1, id2);
+        public void InnerJoin(DataColumn primaryKey, DataColumn foreignKey) => _InnerJoin(primaryKey, foreignKey);
         
 }

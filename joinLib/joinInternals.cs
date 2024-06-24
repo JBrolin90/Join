@@ -3,9 +3,22 @@ namespace JoinTables;
 public partial class EditableJoin :DataTable
 {
     private RowMapper rowMapper = new();
+
+    private MapperDictionary rowDictionary = new();
     private DataSet joinSet = new();
-    private DataColumn? primaryKey;
-    private DataColumn? foreignKey;
+    private DataColumn? _primaryKey;
+    private DataColumn? _foreignKey;
+
+    private DataColumn SourcePrimaryKey { 
+        get => _primaryKey?? throw new Exception("Primary key not found"); 
+        set => _primaryKey = value; }
+    private DataColumn SourceForeignKey { 
+        get => _foreignKey?? throw new Exception("Foreign key not found"); 
+        set => _foreignKey = value; }
+
+    private DataTable SourcePrimaryKeyTable { get => SourcePrimaryKey.Table?? throw new Exception("Table not found"); }
+    private DataTable SourceForeignKeyTable { get => SourceForeignKey.Table?? throw new Exception("Table not found"); }
+
     private void Init(DataSet joinSet)
     {
         if(joinSet.Tables.Count != 2) throw new System.Exception("Must be exactly two tables");
@@ -24,7 +37,11 @@ public partial class EditableJoin :DataTable
         }
     }
 
-
+    private DataTable GetSourceTable(DataColumn c)
+    {
+        return GetSourceColumn(c).Table?? throw new System.Exception("Table not found");
+    }
+    
     private DataColumn GetSourceColumn(DataColumn c)
     {
         string FQName = c.ColumnName;

@@ -55,18 +55,18 @@ public partial class EditableJoin :DataTable
     }
     public RowPairs _InnerJoin(DataTable table1, DataTable table2)
     {
-        primaryKey = table1.Columns["ID"]??throw new NullReferenceException();
+        SourcePrimaryKey = table1.Columns["ID"]??throw new NullReferenceException();
         
-        foreignKey = table2.Columns[table1.TableName + "ID"]??throw new NullReferenceException();
-        RowPairs query = _InnerJoin(table1, primaryKey, table2, foreignKey);
+        SourceForeignKey = table2.Columns[table1.TableName + "ID"]??throw new NullReferenceException();
+        RowPairs query = _InnerJoin(table1, SourcePrimaryKey, table2, SourceForeignKey);
         return query;
     }
 
     private RowPairs _InnerJoin(DataRowCollection rc1, DataColumn primaryKey, 
                                       DataRowCollection rc2, DataColumn foreignKey)
     {
-        this.primaryKey = primaryKey;
-        this.foreignKey = foreignKey;   
+        this.SourcePrimaryKey = primaryKey;
+        this.SourceForeignKey = foreignKey;   
         RowPairs query = rc1.Join(rc2,
                 r1 => r1[primaryKey],
                 r2 => r2[foreignKey],

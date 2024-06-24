@@ -23,6 +23,16 @@ public partial class EditableJoin :DataTable
                     row[c] = r2[sc];
             }
             Rows.Add(row);
+
+            DataRowMap rowMap = new();
+            rowMap.Add(r1.Table, new TableMapper2 { SourceRow = r1 });
+            rowMap.Add(r2.Table, new TableMapper2 { SourceRow = r2 });
+            rowDictionary.Add(row, rowMap);
+
+            DataRowMap rowsMap = rowDictionary[row] ;
+            DataTable sourceTable = rowsMap[r1.Table].SourceTable;
+            DataRow sourceRow = rowsMap[r1.Table].SourceRow;   
+
             TableMapper mapper = new();
             mapper.Add(r1.Table.Rows.IndexOf(r1));
             mapper.Add(r2.Table.Rows.IndexOf(r2));

@@ -1,14 +1,14 @@
 using System.Data;
 namespace JoinTables;
 
-class MyList: List<int>
-{}
+class MyList : List<int>
+{ }
 
 public class JoinTest
 {
-    public DataTable t1 = new ();
-    public DataTable t2 = new ();
-    public DataSet joinSet = new DataSet();
+    public DataTable t1 = new();
+    public DataTable t2 = new();
+    public DataSet joinSet = new();
     public JoinTest()
     {
         Setup();
@@ -19,13 +19,13 @@ public class JoinTest
         t1.TableName = "t1";
         t1.Columns.Add("ID", typeof(int));
         t1.Columns.Add("Name", typeof(string));
-        t1.PrimaryKey = new DataColumn[] { t1.Columns[0] };
+        t1.PrimaryKey = [t1.Columns[0]];
 
         t2.TableName = "t2";
         t2.Columns.Add("ID", typeof(int));
         t2.Columns.Add("t1ID", typeof(int));
         t2.Columns.Add("Name", typeof(string));
-        t2.PrimaryKey = new DataColumn[] { t2.Columns[0] };
+        t2.PrimaryKey = [t2.Columns[0]];
 
         t1.Rows.Add(1, "A");
         t1.Rows.Add(2, "B");
@@ -44,7 +44,7 @@ public class JoinTest
         t1.PrintTable();
         t2.PrintTable();
 
-        EditableJoin join = new EditableJoin(joinSet);
+        EditableJoin join = new(joinSet);
         join.SelectAll();
         join.InnerJoin();
         join.PrintTable();
@@ -69,7 +69,7 @@ public class JoinTest
         t1.PrintTable();
         t2.PrintTable();
 
-        EditableJoin join = new EditableJoin(joinSet);
+        EditableJoin join = new(joinSet);
         join.SelectAll();
         join.InnerJoin();
         join.PrintTable();
@@ -102,7 +102,7 @@ public class JoinTest
         t1.PrintTable();
         t2.PrintTable();
 
-        EditableJoin join = new EditableJoin(joinSet);
+        EditableJoin join = new(joinSet);
         join.SelectAll();
         join.InnerJoin();
         join.PrintTable();
@@ -115,7 +115,7 @@ public class JoinTest
         t1.PrintTable();
         t2.PrintTable();
         Console.WriteLine();
-    }   
+    }
 }
 
 
